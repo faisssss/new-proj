@@ -1,0 +1,13 @@
+# Secrets
+.env
+
+# Python
+.venv/
+__pycache__/
+
+# Raw run data and model checkpoints
+data/
+*.pt
+
+# Terraform state
+*.tfstate*
