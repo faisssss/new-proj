@@ -1,0 +1,26 @@
+prometheus:
+  prometheusSpec:
+    scrapeInterval: 5s
+    evaluationInterval: 5s
+    retention: 1d
+    # Also pick up ServiceMonitors from outside this Helm release (Task 4).
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+alertmanager:
+  enabled: false
+
+grafana:
+  enabled: true
+
+# Not needed for this project, and they save memory. k3s also doesn't expose
+# the control plane parts in the usual way.
+nodeExporter:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeEtcd:
+  enabled: false
