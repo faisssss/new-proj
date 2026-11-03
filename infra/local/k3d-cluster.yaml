@@ -1,0 +1,13 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: rca
+servers: 1
+agents: 0
+options:
+  k3s:
+    extraArgs:
+      # Traefik routes outside web traffic, which this project doesn't need.
+      - arg: --disable=traefik
+        nodeFilters:
+          - server:*
