@@ -1,0 +1,64 @@
+mode: deployment
+fullnameOverride: otel-collector
+
+image:
+  # The contrib image includes the span_metrics connector.
+  repository: otel/opentelemetry-collector-contrib
+
+resources:
+  limits:
+    memory: 256Mi
+
+ports:
+  otlp:
+    enabled: true
+  otlp-http:
+    enabled: false
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+  prom-metrics:
+    enabled: true
+    containerPort: 8889
+    servicePort: 8889
+    protocol: TCP
+
+serviceMonitor:
+  enabled: true
+  metricsEndpoints:
+    - port: prom-metrics
+      interval: 5s
+
+config:
+  receivers:
+    jaeger: null
+    zipkin: null
+    prometheus: null
+  connectors:
+    # Turns spans into each service's request rate, error rate and latency.
+    span_metrics:
+      metrics_flush_interval: 5s
+  exporters:
+    debug: null
+    otlp_grpc/jaeger:
+      endpoint: jaeger:4317
+      tls:
+        insecure: true
+    prometheus:
+      endpoint: 0.0.0.0:8889
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, batch]
+        exporters: [otlp_grpc/jaeger, span_metrics]
+      metrics:
+        receivers: [span_metrics]
+        processors: [memory_limiter, batch]
+        exporters: [prometheus]
+      logs: null

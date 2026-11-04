@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-config
+  namespace: monitoring
+data:
+  config.yaml: |
+    service:
+      extensions: [jaeger_storage, jaeger_query]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [jaeger_storage_exporter]
+
+    extensions:
+      jaeger_query:
+        storage:
+          traces: memstore
+        http:
+          endpoint: 0.0.0.0:16686
+      jaeger_storage:
+        backends:
+          memstore:
+            memory:
+              # The default of 100000 traces would use too much of Docker's memory.
+              max_traces: 2000
+
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+
+    processors:
+      batch:
+
+    exporters:
+      jaeger_storage_exporter:
+        trace_storage: memstore
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: jaegertracing/jaeger:2.22.0
+          args: ["--config", "/etc/jaeger/config.yaml"]
+          ports:
+            - containerPort: 16686
+            - containerPort: 4317
+          readinessProbe:
+            tcpSocket:
+              port: 16686
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              memory: 300Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/jaeger
+      volumes:
+        - name: config
+          configMap:
+            name: jaeger-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger
+  namespace: monitoring
+spec:
+  selector:
+    app: jaeger
+  ports:
+    - name: query
+      port: 16686
+    - name: otlp
+      port: 4317

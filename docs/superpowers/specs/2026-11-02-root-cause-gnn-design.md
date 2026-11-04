@@ -64,7 +64,7 @@ The same system runs on the laptop (`k3d`) and on AWS (`k3s` on one server). Tra
 - **App:** Google's open-source [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo), pinned to one release. It has 10 application services, a load generator and a Redis store. The 10 application services are the possible root causes.
 - **Traffic:** the app's load generator, at a fixed rate during data collection.
 - **Metrics:** Prometheus, scraping every 5 seconds, collecting CPU, memory, network, restarts and pod status.
-- **Request-level signals:** OpenTelemetry traces. The Collector's span metrics provide each service's request rate, error rate and latency, which the app does not expose directly.
+- **Request-level signals:** OpenTelemetry traces. The Collector's span metrics provide each service's request rate, error rate and latency, which the app does not expose directly. At v0.10.7, `adservice`, `cartservice` and `shippingservice` send no spans of their own, so their request signals come from the client spans of the services calling them. This measures them from the caller's side, and includes any network delay.
 - **Logs:** a small script that counts error-level lines per service. This avoids running a full log system.
 - **Dependency graph:** directed edges (caller to callee) built from captured traces, stored as a versioned file.
 

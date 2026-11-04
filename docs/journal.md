@@ -20,3 +20,10 @@ Decisions, mistakes and what changed.
 - Pod names change when a pod is replaced, so the model has to work with service names, not pod names.
 - Services have very different normal levels (`adservice` about 198 MB of memory, `checkoutservice` about 17 MB), so each one has to be compared with its own healthy baseline.
 - Deleting the `currencyservice` pod showed up clearly on the CPU graph: the replacement pod spiked to about 5% of a core while starting, and `frontend` dipped at the same time.
+
+### What traces showed (2026-11-04)
+
+- 7 of the 10 services send their own spans. `adservice`, `cartservice` and `shippingservice` don't at this version.
+- Decision: measure those three from the client spans of `frontend` and `checkoutservice`. Confirmed in Prometheus with 8 caller-side rows covering all three. The trade-off is that these numbers include network delay, and show nothing about what happens inside those services.
+- Trouble travels up to the caller, not sideways. A slow `GetQuote` wouldn't slow down `Charge`, but it would slow down `checkoutservice`, which calls both.
+- In one traced checkout, `PaymentService/Charge` was the slowest call from `checkoutservice`, at 1.7 ms of the 12.4 ms total.
