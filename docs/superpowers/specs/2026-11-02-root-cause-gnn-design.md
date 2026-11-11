@@ -270,14 +270,14 @@ docs/journal.md    the owner's notes: decisions, mistakes, what changed
 | Fault injection | Chooses faults, runs and checks experiments, extends the script | Writes the first script |
 | Data pipeline | Writes labelling and feature code | Explains, helps with collection plumbing, reviews |
 | Baselines | Writes | Explains, reviews |
-| **Model** | **Writes, trains, tunes** | Teaches, gives hints first, helps debug, reviews |
+| **Model** | Runs training, reads and understands every part | Writes it and explains it line by line |
 | Evaluation | Runs, interprets | Checks for mistakes such as leakage |
-| **Agent loop and safety rules** | **Writes** | Teaches, reviews, helps test failure cases |
+| **Agent loop and safety rules** | Runs it, reads and understands every part | Writes it and explains it line by line |
 | AWS and Terraform | Creates accounts, handles payment and keys, runs deploys | Writes the first files and explains them line by line |
 | Demo page | Decides content, records incidents | Builds most of it |
 | Write-up | Writes | Gives feedback, checks claims against results |
 
-**Learning loop for each step:** explain the concept, the owner tries it, review, the owner explains it back, then commit and add a line to the journal.
+**Learning loop for each step:** Claude explains the concept, writes the code and walks through it line by line; the owner runs it and asks about anything unclear; then commit and add a line to the journal. (Changed on 2026-11-11 at the owner's request: the owner no longer writes the core code.)
 
 **Resume rule:** claim only what was built and measured, using the real numbers and "human-approved", not "autonomous".
 

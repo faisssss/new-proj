@@ -1,0 +1,16 @@
+[project]
+name = "new-proj"
+version = "0.1.0"
+description = "Root-cause graph neural network and human-approved remediation agent"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
